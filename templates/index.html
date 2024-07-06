@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h2>Corrections</h2>
+        <table>
+            {% for error in errors %}
+            <tr>
+                <th>Error:</th>
+                <td style="color: red">{{ error['incorrect sentence'] }}</td>
+            </tr>
+            <tr>
+                <th>Correction:</th>
+                <td id = "{{ loop.index0 }}" style="color: green; display: none">
+                    {% for sentence in error['correct sentence'] %}
+                        {{ sentence }}<br>
+                    {% endfor %}
+                </td>
+                <td><button onclick="hideShow('{{ loop.index0 }}')">Hide/Show</button></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <script>
+            function hideShow(id) {
+                var correction = document.getElementById(id);
+                if (correction.style.display === "none") {
+                    correction.style.display = "block";
+                } else {
+                    correction.style.display = "none"
+                }
+            }
+        </script>
+<form method="POST">
+    {{ template_form.hidden_tag() }}
+    <p>
+        {{ template_form.error.label }}
+        {{ template_form.error() }}
+    </p>
+    <p>
+        {{ template_form.correction.label }}
+        {{ template_form.correction() }}
+    </p>
+    <p>
+        {{ template_form.submit() }}
+    </p>
+</form>
+
+{% endblock %}

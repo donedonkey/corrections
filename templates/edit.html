@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h2>Edit</h2>
+    <table>
+        {% for error in errors %}
+        <tr>
+            <th>Error:</th>
+            <td style="color: red">{{ error['incorrect sentence'] }}</td>
+            <td>
+                <form style="display:inline" onsubmit="return false;">
+                    <button onclick="hideShow('{{ loop.index0 }}')">Edit</button></td>
+                </form>
+            <td>
+                <form method="POST" action="/remove_error" style="display:inline" onsubmit="return confirmRemoval();">
+                    {{ template_form.hidden_tag() }}
+                    <input type="hidden" name="remove_index" value="{{ loop.index0 }}">
+                    {{ remove_form.hidden_tag() }}
+                    {{ remove_form.submit(value='Remove') }}
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <th>Correction:</th>
+            <td style="color: green">
+                {% for sentence in error['correct sentence'] %}
+                    {{ sentence }}<br>
+                {% endfor %}
+            </td>
+                
+        </tr>
+        <tr id="form-cell-{{ loop.index0 }}" style="display: none;">
+            <td colspan="3">
+                <form method="POST" action="{{ url_for('remove_error') }}">
+                    {{ template_form.hidden_tag() }}
+                    <input type="hidden" name="remove_index" value="{{ loop.index0 }}">
+                    <p>
+                        {{ template_form.error.label }}
+                        {{ template_form.error(value=error['incorrect sentence']) }}
+                    </p>
+                    <p>
+                        {{ template_form.correction.label }}
+                        {{ template_form.correction(value='\n'.join(error['correct sentence'])) }}
+                    </p>
+                    <p>
+                        {{ template_form.submit() }}
+                    </p>
+                </form>
+            </td>
+        </tr>      
+        {% endfor %}              
+    </table>
+    
+    
+    <script>
+        function hideShow(index) {
+            var formCell = document.getElementById('form-cell-' + index);
+            if (formCell.style.display === 'none') {
+                formCell.style.display = 'table-row';
+            } else {
+                formCell.style.display = 'none'
+            }
+        }
+
+        function confirmRemoval() {
+            return confirm('Are you sure you want to remove this sentence?');
+        }
+    </script>
+{% endblock %}
